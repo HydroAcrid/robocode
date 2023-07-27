@@ -95,3 +95,31 @@ public class CrusherV3 extends AdvancedRobot
         return angle;
     }
 }
+
+
+
+
+
+public void wallSmoothing(ScannedRobotEvent e) {
+    double absBearing = e.getBearingRadians() + getHeadingRadians();
+    double goalDirection = absBearing - Math.PI / 2 * direction;
+
+    Rectangle2D fieldRect = new Rectangle2D.Double(18, 18, getBattleFieldWidth() - 36, getBattleFieldHeight() - 36);
+    while (!fieldRect.contains(getX() + Math.sin(goalDirection) * 120, getY() + Math.cos(goalDirection) * 120)) {
+        goalDirection += direction * 0.1;  // turn a little toward enemy and try again
+    }
+    
+    double turn = Utils.normalRelativeAngle(goalDirection - getHeadingRadians());
+    
+    if (Math.abs(turn) > Math.PI / 2) {
+        turn = Utils.normalRelativeAngle(turn + Math.PI);
+        setBack(100);
+        movingForward = false;
+    } else {
+        setAhead(100);
+        movingForward = true;
+    }
+    
+    setTurnRightRadians(turn);
+}
+
